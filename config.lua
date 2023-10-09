@@ -5,12 +5,71 @@ lvim.plugins = {
   "mfussenegger/nvim-dap-python",
   "nvim-neotest/neotest",
   "nvim-neotest/neotest-python",
+  -- "unblevable/quick-scope",
+  {
+  "phaazon/hop.nvim",
+  event = "BufRead",
+  config = function()
+    require("hop").setup()
+    -- vim.api.nvim_set_keymap("n", "s", ":HopChar2<cr>", { silent = true })
+    -- vim.api.nvim_set_keymap("n", "S", ":HopWord<cr>", { silent = true })
+    vim.api.nvim_set_keymap('n', 'jw', "<cmd> lua require'hop'.hint_words({ hint_position = require'hop.hint'.HintPosition.BEGIN })<cr>", {})
+    vim.api.nvim_set_keymap('v', 'jw', "<cmd> lua require'hop'.hint_words({ hint_position = require'hop.hint'.HintPosition.BEGIN })<cr>", {})
+    vim.api.nvim_set_keymap('o', 'jw', "<cmd> lua require'hop'.hint_words({ hint_position = require'hop.hint'.HintPosition.BEGIN, inclusive_jump = true })<cr>", {})
+    vim.api.nvim_set_keymap('n', 'jr', "<cmd> lua require'hop'.hint_lines({ hint_position = require'hop.hint'.HintPosition.BEGIN })<cr>", {})
+    vim.api.nvim_set_keymap('v', 'jr', "<cmd> lua require'hop'.hint_lines({ hint_position = require'hop.hint'.HintPosition.BEGIN })<cr>", {})
+    vim.api.nvim_set_keymap('o', 'jr', "<cmd> lua require'hop'.hint_lines({ hint_position = require'hop.hint'.HintPosition.BEGIN, inclusive_jump = true })<cr>", {})
+    vim.api.nvim_set_keymap('n', 'jf', "<cmd> lua require'hop'.hint_patterns({ hint_position = require'hop.hint'.HintPosition.BEGIN })<cr>", {})
+    vim.api.nvim_set_keymap('v', 'jf', "<cmd> lua require'hop'.hint_patterns({ hint_position = require'hop.hint'.HintPosition.BEGIN })<cr>", {})
+    vim.api.nvim_set_keymap('o', 'jf', "<cmd> lua require'hop'.hint_patterns({ hint_position = require'hop.hint'.HintPosition.BEGIN, inclusive_jump = true })<cr>", {})
+
+  end,
+  },
+  {
+  "ggandor/leap.nvim",
+  name = "leap",
+  config = function()
+    require("leap").add_default_mappings()
+  end,
+  },
+  {
+  "nacro90/numb.nvim",
+  event = "BufRead",
+  config = function()
+  require("numb").setup {
+    show_numbers = true, -- Enable 'number' for the window while peeking
+    show_cursorline = true, -- Enable 'cursorline' for the window while peeking
+  }
+  end,
+  },
+  {
+  "tpope/vim-fugitive",
+  cmd = {
+    "G",
+    "Git",
+    "Gdiffsplit",
+    "Gread",
+    "Gwrite",
+    "Ggrep",
+    "GMove",
+    "GDelete",
+    "GBrowse",
+    "GRemove",
+    "GRename",
+    "Glgrep",
+    "Gedit"
+  },
+  ft = {"fugitive"}
+  },
 }
 
 -- automatically install python syntax highlighting
 lvim.builtin.treesitter.ensure_installed = {
   "python",
 }
+
+-- set up markdown lsp server
+require("lvim.lsp.manager").setup("marksman")
 
 -- setup formatting
 local formatters = require "lvim.lsp.null-ls.formatters"
@@ -20,7 +79,7 @@ lvim.format_on_save.pattern = { "*.py" }
 
 -- setup linting
 local linters = require "lvim.lsp.null-ls.linters"
-linters.setup { { command = "flake8", filetypes = { "python" } } }
+linters.setup { { command = "ruff", filetypes = { "python" } } }
 
 -- setup debug adapter
 lvim.builtin.dap.active = true
@@ -62,3 +121,16 @@ lvim.builtin.which_key.mappings["C"] = {
   c = { "<cmd>lua require('swenv.api').pick_venv()<cr>", "Choose Env" },
 }
 
+function _G.set_terminal_keymaps()
+  local opts = {buffer = 0}
+  -- vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
+  vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
+  vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
+  vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
+  vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
+end
+
+-- if you only want these mappings for toggle term use term://*toggleterm#* instead
+vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
