@@ -5,7 +5,10 @@ lvim.plugins = {
   "mfussenegger/nvim-dap-python",
   "nvim-neotest/neotest",
   "nvim-neotest/neotest-python",
-  -- "unblevable/quick-scope",
+  {
+    "unblevable/quick-scope"
+    -- QuickScopeToggle
+  },
   {
   "phaazon/hop.nvim",
   event = "BufRead",
@@ -22,16 +25,35 @@ lvim.plugins = {
     vim.api.nvim_set_keymap('n', 'jf', "<cmd> lua require'hop'.hint_patterns({ hint_position = require'hop.hint'.HintPosition.BEGIN })<cr>", {})
     vim.api.nvim_set_keymap('v', 'jf', "<cmd> lua require'hop'.hint_patterns({ hint_position = require'hop.hint'.HintPosition.BEGIN })<cr>", {})
     vim.api.nvim_set_keymap('o', 'jf', "<cmd> lua require'hop'.hint_patterns({ hint_position = require'hop.hint'.HintPosition.BEGIN, inclusive_jump = true })<cr>", {})
-
   end,
   },
   {
-  "ggandor/leap.nvim",
-  name = "leap",
-  config = function()
-    require("leap").add_default_mappings()
-  end,
+  "folke/flash.nvim",
+  event = "VeryLazy",
+  ---@type Flash.Config
+  -- opts.label.after = {0, 2},
+  -- opts = {}
+  opts = {
+      label = {
+        after = {0, 2},
+      },
+    },
+  -- stylua: ignore
+  keys = {
+    { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+    { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+    { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+    { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
   },
+},
+  -- {
+  -- "ggandor/leap.nvim",
+  -- name = "leap",
+  -- config = function()
+  --   require("leap").add_default_mappings()
+  -- end,
+  -- },
   {
   "nacro90/numb.nvim",
   event = "BufRead",
